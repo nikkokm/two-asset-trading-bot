@@ -6,24 +6,11 @@
 from config import *
 import pandas as pd
 import train_model
-from get_features import get_features
+from features import get_features
 import data_aggregator
-import prices
 import alpaca_trade_api as tradeapi
 
 
-def update_data():  # this functions just does the bottom part of what is in data_aggregator.py but this function
-    # is needed for scheduling purposes
-    etf_prices = prices.get_prices(start=START_DATE, end=END_DATE)
-    etf_returns = data_aggregator.compute_returns(etf_prices)
-    merged_etf_data = etf_prices.merge(etf_returns, right_index=True, left_index=True)
-    indicators = data_aggregator.compute_indicators(merged_etf_data)  # this uses the "ta" lib, but it does not need
-    # to be imported
-    merged_etf_data = merged_etf_data.merge(indicators, right_index=True, left_index=True)
-    vix_data = data_aggregator.get_vix()
-    data = merged_etf_data.merge(vix_data, right_index=True, left_index=True)
-    data.to_csv('Data/database.csv')
-    return
 
 
 def get_trade():  # this function is to get the predicted trade for today and the relative capital amount to trade
@@ -122,7 +109,8 @@ def trade(prediction, weight):   # this function trades
 
         return
 
-update_data()
+data_aggregator.update_data()
+
 df = pd.read_csv('Data/database.csv', index_col='Date')
 df = train_model.compute_label(df=df)
 

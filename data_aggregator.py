@@ -7,10 +7,59 @@
 from config import *
 import pandas as pd
 import numpy as np
-import prices
 import ta
 import requests
 from os import remove
+import datetime
+
+def get_prices(start, end):
+    """
+
+    """
+
+    tickers = TICKERS  # fetch tickers from config.py
+    df_final = pd.DataFrame()  # declared for merging purposes (inside loops)
+
+    for ticker in tickers:  # Loop over tickers to fetch individual price series
+
+        r = requests.get("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=" + ticker
+                         + "&outputsize=full&apikey=" + ALPHAVANTAGE_KEY)
+        r_dict = r.json()
+
+        dates = np.array([])  # this loop makes the index into an index of datetime objects. Note the format.
+        for i in r_dict['Time Series (Daily)'].keys():
+            datetime_obj = datetime.datetime.strptime(i, '%Y-%m-%d')
+            dates = np.append(dates, datetime_obj)
+
+        prices = np.array([])  # This loop extracts all prices and put them into an array
+        for i in r_dict['Time Series (Daily)']:
+            x = r_dict['Time Series (Daily)'][i]['5. adjusted close']
+            prices = np.append(prices, x)
+
+        open_prices = np.array([])  # grab opening prices as well
+        for i in r_dict['Time Series (Daily)']:
+            x = r_dict['Time Series (Daily)'][i]['1. open']
+            open_prices = np.append(open_prices, x)
+
+        df = pd.DataFrame({  # This dataframe contains each individual stock
+            'Date': dates,
+            str(ticker + '_' + 'adjclose'): prices,
+            str(ticker + '_' + 'open'): open_prices
+        })
+        df = df.set_index('Date')
+
+        df_final = pd.DataFrame(data=df_final,
+                                index=dates)  # these few lines are for merging the individual dataframes
+        df_final.index.name = 'Date'
+        df_final = df.merge(df_final, left_index=True, right_index=True)
+
+    for ticker in tickers:  # convert to numeric values. Prices are just "objects"
+        df_final[str(ticker + '_' + 'adjclose')] = pd.to_numeric(df_final[str(ticker + '_' + 'adjclose')])
+        df_final[str(ticker + '_' + 'open')] = pd.to_numeric(df_final[str(ticker + '_' + 'open')])
+
+    df_final = df_final.iloc[::-1]
+
+    return df_final[start: end]  # slice the dataframe at the end, only return the specified date-range.
 
 
 def compute_returns(data):
@@ -67,16 +116,18 @@ def get_vix():
     return df
 
 
-etf_prices = prices.get_prices(start=START_DATE, end=END_DATE)  # fetch prices of the ETFs
-etf_returns = compute_returns(etf_prices)  # compute the daily and trailing returns
-merged_etf_data = etf_prices.merge(etf_returns, right_index=True, left_index=True)  # merge it together
-indicators = compute_indicators(merged_etf_data)  # compute all indicators for our ETFs
-merged_etf_data = merged_etf_data.merge(indicators, right_index=True,
-                                        left_index=True)  # merge indicators with the ETF returns
-
-vix_data = get_vix() # get vix data
-data = merged_etf_data.merge(vix_data, right_index=True, left_index=True) # merge it all together on the index
-data.to_csv('Data/database.csv') # write to a .csv file
+def update_data():  # this functions just does the bottom part of what is in data_aggregator.py but this function
+    # is needed for scheduling purposes
+    etf_prices = get_prices(start=START_DATE, end=END_DATE)
+    etf_returns = compute_returns(etf_prices)
+    merged_etf_data = etf_prices.merge(etf_returns, right_index=True, left_index=True)
+    indicators = compute_indicators(merged_etf_data)  # this uses the "ta" lib, but it does not need
+    # to be imported
+    merged_etf_data = merged_etf_data.merge(indicators, right_index=True, left_index=True)
+    vix_data = get_vix()
+    data = merged_etf_data.merge(vix_data, right_index=True, left_index=True)
+    data.to_csv('Data/database.csv')
+    return
 
 
 

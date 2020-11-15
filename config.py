@@ -19,7 +19,6 @@ END_DATE = END_DATE.strftime('%Y-%m-%d')
 TODAY = TODAY.strftime('%Y-%m-%d')
 
 # Keep tickers of the investable universe in here
-#TICKERS = ['PDP', 'VTV']
 TICKERS = ['MTUM', 'VTV']
 
 
