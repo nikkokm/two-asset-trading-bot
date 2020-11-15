@@ -81,6 +81,5 @@ def get_trade(df, data):  # df: database.csv, data: output from get_features()
             weight = 0.3
         elif weight < 0.3:
             weight = 0.4
-#        weight = weight * (-1)
 
     return prediction, weight

@@ -1,7 +1,7 @@
 #################################
 #    Creates and maintains
 #   a .csv file with all
-#   features used in the algo
+#   data used in the algo
 #################################
 
 from config import *
@@ -14,7 +14,10 @@ import datetime
 
 def get_prices(start, end):
     """
+    Fetches the prices of whatever securities we have specified in the config.py file
 
+    start/end: (str) YYYY-MM-DD of the range considered, imported from config.py
+    returns a pandas.DataFrame with prices
     """
 
     tickers = TICKERS  # fetch tickers from config.py
@@ -63,6 +66,14 @@ def get_prices(start, end):
 
 
 def compute_returns(data):
+    """
+    Computes the daily returns and trailing returns over 10 days, the latter of which is used to compute the label
+    we want to predict with our ML model.
+
+    data: pandas.DataFrame containing prices from get_prices()
+    returns a pandas.DataFrame with returns
+    """
+
     daily_return_labels = [i + '_daily_return' for i in TICKERS]
     trailing_return_labels = [i + '_trailing_return' for i in TICKERS]
 
@@ -79,8 +90,14 @@ def compute_returns(data):
     return return_data
 
 
-def compute_indicators(data): # indicators are computed on the OPENING prices, not closing!
-    #  the data arg is a DF with only (opening) prices of the securities we want to trade
+def compute_indicators(data):
+
+    """
+    Computes the MACD and RSI indicator on OPENING prices for each of the two ETFs
+
+    data: pandas.DataFrame with (opening) prices of the securities we want to trade
+    returns a pandas.DataFrame with MACD and RSI indicators computed
+    """
     MACD_labels = [i + '_MACD' for i in TICKERS]
     MACD_signal_labels = [i + '_MACD_signal' for i in TICKERS]
     RSI_labels = [i + '_RSI' for i in TICKERS]
@@ -101,6 +118,12 @@ def compute_indicators(data): # indicators are computed on the OPENING prices, n
 
 
 def get_vix():
+    """
+    Fetches VIX opening values, used to train the ML model
+
+    returns a pandas.DataFrame with VIX data
+    """
+
     url = 'http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv'
     r = requests.get(url)
     f = open('vix.csv', 'wb')
@@ -116,8 +139,12 @@ def get_vix():
     return df
 
 
-def update_data():  # this functions just does the bottom part of what is in data_aggregator.py but this function
-    # is needed for scheduling purposes
+def update_data():
+    """
+    Calls the above functions and merges data to create the final dataframe used.
+    It writes said dataframe to a .csv file and returns nothing.
+    This function is to be called in main.py to keep the data up-to-date
+    """
     etf_prices = get_prices(start=START_DATE, end=END_DATE)
     etf_returns = compute_returns(etf_prices)
     merged_etf_data = etf_prices.merge(etf_returns, right_index=True, left_index=True)
@@ -128,6 +155,3 @@ def update_data():  # this functions just does the bottom part of what is in dat
     data = merged_etf_data.merge(vix_data, right_index=True, left_index=True)
     data.to_csv('Data/database.csv')
     return
-
-
-

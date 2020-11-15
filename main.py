@@ -11,8 +11,6 @@ import data_aggregator
 import alpaca_trade_api as tradeapi
 
 
-
-
 def get_trade():  # this function is to get the predicted trade for today and the relative capital amount to trade
     df = pd.read_csv("Data/database.csv", index_col='Date')
     df = train_model.compute_label(df=df)
