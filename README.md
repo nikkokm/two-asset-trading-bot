@@ -6,7 +6,7 @@ Just clone the repo to a server with Python installed and
 run [main.py](main.py) after filling in the API keys and Alpaca
 API endpoint in [config.py](config.py)
 
-###### Packages Required
+##### Packages Required
 - pandas
 - numpy
 - requests
@@ -18,12 +18,12 @@ API endpoint in [config.py](config.py)
 First and foremost, an AlphaVantage API key is needed as well as API keys to perform paper 
 trading through Alpaca
 
-###### Data
+##### Data
 Data is updated and stored in [Data/databse.csv](Data/databse.csv) 
 every day. Price data is pulled from AlphaVantage and VIX data
 is pulled from the CBOE website. 
 
-###### Trading Logic
+##### Trading Logic
 I define a simple trading rule and codify it in a dummy variable:
 >If for today, the 10-day cumulative return for the momentum ETF is 
 >greater  than the 
