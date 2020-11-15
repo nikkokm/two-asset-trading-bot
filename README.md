@@ -3,7 +3,8 @@ Inspired by Value and Momentum Everywhere (2013), although value and momentum ET
 
 ### Setup
 Just clone the repo to a server with Python installed and 
-run [main.py](main.py).
+run [main.py](main.py) after filling in the API keys and Alpaca
+API endpoint in [config.py](config.py)
 
 ###### Packages Required
 - pandas
@@ -14,7 +15,8 @@ run [main.py](main.py).
 - ta
 
 ### How it Works
-First and foremost, an AlphaVantage API key is needed as well as API keys to perform paper trading through Alpaca
+First and foremost, an AlphaVantage API key is needed as well as API keys to perform paper 
+trading through Alpaca
 
 ###### Data
 Data is updated and stored in [Data/databse.csv](Data/databse.csv) 
