@@ -14,6 +14,10 @@ import alpaca_trade_api as tradeapi
 labels = [i + '_open' for i in TICKERS]
 
 def get_features():
+    """
+    This function computes the indicators on the opening prices, on the day that we initiate a trade.
+    returns numpy.array that is fed into get_trade() in main.py
+    """
 
     api = tradeapi.REST(ALPACA_KEY_ID, ALPACA_SECRET_KEY, ALPACA_ENDPOINT)
     barset = api.get_barset(TICKERS, 'day', limit=1, start=TODAY, end=TODAY)

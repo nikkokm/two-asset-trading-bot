@@ -12,12 +12,20 @@ import numpy as np
 
 
 def compute_label(df):
-    #df['buy_momentum'] = np.where(df['VTV_trailing_return'] < df['PDP_trailing_return'], 1, 0)
+    """
+    Computes the binary label we try to predict
+    df: pandas.DataFrame with trailing returns of the two ETFs
+    returns pandas.DataFrame with the label
+    """
     df['buy_momentum'] = np.where(df['VTV_trailing_return'] < df['MTUM_trailing_return'], 1, 0)
     return df
 
 
-def train_model_in_sample(df): #  take the df with ETF prices, returns, features and everything else
+def train_model_in_sample(df):
+    """
+    Trains a logistic model on the data and performs time-series cross-validation
+    and prints the accuracy score. Only used for experimenting with different ML models.
+    """
     feature_columns = [8, 9, 10, 11, 12, 13, 14]
     label_column = [15]
     X = df[df.columns[feature_columns]].values
@@ -55,7 +63,14 @@ def train_model_in_sample(df): #  take the df with ETF prices, returns, features
     return model_result
 
 
-def get_trade(df, data):  # df: database.csv, data: output from get_features()
+def fit_model(df, data):
+    """
+    Trains the model on all of our data and predicts the trade we will make as well as the
+    relative amount of capital to use. This function is called within get_trade() in main.py
+
+    df: pandas.DataFrame with all the data. I.e. database.csv
+    data: output from get_features()
+    """
     feature_columns = [8, 9, 10, 11, 12, 13, 14]
     label_column = [15]
     X = df[df.columns[feature_columns]].values

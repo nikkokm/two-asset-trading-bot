@@ -11,15 +11,22 @@ import data_aggregator
 import alpaca_trade_api as tradeapi
 
 
-def get_trade():  # this function is to get the predicted trade for today and the relative capital amount to trade
+def get_trade():
+    """
+    This function gets the predicted trade for today and the relative capital amount to trade
+    returns the prediction (what to go long/short in for today) and how much capital to spend
+    """
     df = pd.read_csv("Data/database.csv", index_col='Date')
     df = train_model.compute_label(df=df)
     features = get_features()
-    prediction, weight = train_model.get_trade(df=df, data=features)
+    prediction, weight = train_model.fit_model(df=df, data=features)
     return prediction, weight
 
 
-def trade(prediction, weight):   # this function trades
+def trade(prediction, weight):
+    """
+    This function executes the trades as per prediction and weight from get_trade()
+    """
 
     api = tradeapi.REST(ALPACA_KEY_ID, ALPACA_SECRET_KEY, ALPACA_ENDPOINT)
     account = api.get_account()
