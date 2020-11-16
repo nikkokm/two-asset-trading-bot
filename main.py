@@ -1,5 +1,5 @@
 #######################
-#   Main algo, yo
+#   Main script
 #
 #######################
 
@@ -9,6 +9,10 @@ import train_model
 from features import get_features
 import data_aggregator
 import alpaca_trade_api as tradeapi
+from pytz import timezone
+import datetime
+import time
+
 
 
 def get_trade():
@@ -27,8 +31,6 @@ def trade(prediction, weight):
     """
     This function executes the trades as per prediction and weight from get_trade()
     """
-
-    api = tradeapi.REST(ALPACA_KEY_ID, ALPACA_SECRET_KEY, ALPACA_ENDPOINT)
     account = api.get_account()
     cash = float(account.cash)
     cash_to_spend = cash*weight
@@ -114,11 +116,87 @@ def trade(prediction, weight):
 
         return
 
-data_aggregator.update_data()
 
+def check_trade_history():
+    """
+    Check if we have submitted an order that was filled, today. if so, return True, else return False
+    """
+    today = datetime.date.today()
+    lower = today - datetime.timedelta(days=1)
+    upper = today + datetime.timedelta(days=1)
+
+    orders = api.list_orders(status='all', after=lower, until=upper)
+
+    if not orders:  # if we have not traded today, the orders object is an empty list
+        return False
+    else:
+        return True
+
+
+def is_market_open():
+    """
+    Checks if the market is open today. Returns True if so, otherwise it returns False.
+    Evaluated against NYC time. i.e. when it is 1 AM on a Monday in Europe, the function returns False,
+    as it is Sunday in NYC.
+    Note that the function only accounts for date, not time. i.e. 6 AM on Tuesday, NYC time returns True
+    """
+
+    nyc = timezone('America/New_York')
+    today_us_time =  datetime.datetime.today().astimezone(nyc)
+    today_us_str = today_us_time.strftime('%Y-%m-%d')
+    calendar = api.get_calendar(start=today_us_str, end=today_us_str)[0]
+    open_date = calendar.date.strftime('%Y-%m-%d')
+
+    if open_date == today_us_str:
+        return True
+    else:
+        return False
+
+
+
+api = tradeapi.REST(ALPACA_KEY_ID, ALPACA_SECRET_KEY, ALPACA_ENDPOINT)
+
+# This block of code is to for running the algo non-stop
+# while True:
+#     trading_day_today = is_market_open()
+#
+#     if trading_day_today is False:
+#         time.sleep(1800)  # wait 30 minutes
+#         continue  # go back and check if now, 30 minutes later, we are in a trading day (from the POV of NYC)
+#
+#     else:
+#         traded_today = check_trade_history()
+#
+#         if traded_today is True:
+#             time.sleep(1800)  # wait 30 minutes
+#             continue  # go back to top of loop
+#
+#         else:
+#
+#             clock = api.get_clock()
+#             if clock.is_open is False:  # Today is a trading day, we did not trade yet and the market is closed.
+#                 time.sleep(30)  # wait only 30 seconds if we have not traded yet
+#                 continue
+#
+#             else:  # Today is a trading day, we did not trade yet, the market is open.
+#                 data_aggregator.update_data()  # update the CSV with most recent data
+#                 df = pd.read_csv('Data/database.csv', index_col='Date')
+#                 df = train_model.compute_label(df=df)
+#                 pred, weight = get_trade()
+#                 trade(prediction=pred, weight=weight)
+#                 time.sleep(7200)  # wait 20 hours before resuming while loop
+#                 continue
+
+
+data_aggregator.update_data()
 df = pd.read_csv('Data/database.csv', index_col='Date')
 df = train_model.compute_label(df=df)
+train_model.train_model_in_sample(df)  # just running this to see that all the code works
+pred, weight = get_trade()
+trade(pred, weight)
 
-train_model.train_model_in_sample(df)
-#pred, weight = get_trade()
-#trade(pred, weight)
+
+
+
+
+

@@ -25,6 +25,8 @@ def train_model_in_sample(df):
     """
     Trains a logistic model on the data and performs time-series cross-validation
     and prints the accuracy score. Only used for experimenting with different ML models.
+
+    df: pandas.DataFrame, essentially database.csv AFTER compute_label() has been run on the CSV.
     """
     feature_columns = [8, 9, 10, 11, 12, 13, 14]
     label_column = [15]
