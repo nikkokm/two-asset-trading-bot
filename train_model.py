@@ -90,13 +90,6 @@ def fit_model(df, data):
         weight = weight - 0.5
 
     elif weight < 0.5:
-        if weight == 0.4:
-            weight = 0.1
-        elif weight == 0.3:
-            weight = 0.2
-        elif weight == 0.2:
-            weight = 0.3
-        elif weight < 0.3:
-            weight = 0.4
+        weight = 0.5 - weight
 
     return prediction, weight
