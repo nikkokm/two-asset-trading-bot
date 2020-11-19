@@ -5,10 +5,10 @@
 import datetime
 
 #API Keys needed
-ALPACA_SECRET_KEY = 'jwYb6J3JzWqFjJeDkzkAjzqbsUbzCa4OXhGV9Sbk'
-ALPACA_KEY_ID = 'PKWG2JNVN30BZJX3ONT0'
+ALPACA_SECRET_KEY = ''
+ALPACA_KEY_ID = ''
 ALPACA_ENDPOINT = 'https://paper-api.alpaca.markets'
-ALPHAVANTAGE_KEY = 'AX9L41Q11KV9IDD9'
+ALPHAVANTAGE_KEY = ''
 
 # start and end data for data
 START_DATE = '2013-01-18'
