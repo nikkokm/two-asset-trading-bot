@@ -156,41 +156,34 @@ def is_market_open():
 
 api = tradeapi.REST(ALPACA_KEY_ID, ALPACA_SECRET_KEY, ALPACA_ENDPOINT)
 
-#This block of code is to for running the algo non-stop
-# while True:
-#     trading_day_today = is_market_open()
-#
-#     if trading_day_today is False:
-#         time.sleep(1800)  # wait 30 minutes
-#         continue  # go back and check if now, 30 minutes later, we are in a trading day (from the POV of NYC)
-#
-#     else:
-#         traded_today = check_trade_history()
-#
-#         if traded_today is True:
-#             time.sleep(1800)  # wait 30 minutes
-#             continue  # go back to top of loop
-#
-#         else:
-#
-#             clock = api.get_clock()
-#             if clock.is_open is False:  # Today is a trading day, we did not trade yet and the market is closed.
-#                 time.sleep(30)  # wait only 30 seconds if we have not traded yet
-#                 continue
-#
-#             else:  # Today is a trading day, we did not trade yet, the market is open.
-#                 data_aggregator.update_data()  # update the CSV with most recent data
-#                 df = pd.read_csv('Data/database.csv', index_col='Date')
-#                 df = train_model.compute_label(df=df)
-#                 pred, weight = get_trade()
-#                 trade(prediction=pred, weight=weight)
-#                 print('Trade Executed...')
-#                 time.sleep(7200)  # wait 20 hours before resuming while loop
-#                 continue
+This block of code is to for running the algo non-stop
+ while True:
+     trading_day_today = is_market_open()
 
-data_aggregator.update_data()  # update the CSV with most recent data
-df = pd.read_csv('Data/database.csv', index_col='Date')
-df = train_model.compute_label(df=df)
-pred, weight = get_trade()
-print(pred)
-print(weight)
+     if trading_day_today is False:
+         time.sleep(1800)  # wait 30 minutes
+         continue  # go back and check if now, 30 minutes later, we are in a trading day (from the POV of NYC)
+
+     else:
+         traded_today = check_trade_history()
+
+         if traded_today is True:
+             time.sleep(1800)  # wait 30 minutes
+             continue  # go back to top of loop
+
+         else:
+
+             clock = api.get_clock()
+             if clock.is_open is False:  # Today is a trading day, we did not trade yet and the market is closed.
+                 time.sleep(30)  # wait only 30 seconds if we have not traded yet
+                 continue
+
+             else:  # Today is a trading day, we did not trade yet, the market is open.
+                 data_aggregator.update_data()  # update the CSV with most recent data
+                 df = pd.read_csv('Data/database.csv', index_col='Date')
+                 df = train_model.compute_label(df=df)
+                 pred, weight = get_trade()
+                 trade(prediction=pred, weight=weight)
+                 print('Trade Executed...')
+                 time.sleep(7200)  # wait 20 hours before resuming while loop
+                 continue
