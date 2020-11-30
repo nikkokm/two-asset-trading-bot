@@ -78,7 +78,7 @@ def fit_model(df, data):
     X = df[df.columns[feature_columns]].values
     y = df[df.columns[label_column]].values.ravel()
     model = LogisticRegression(max_iter=1000)
-    model.fit(X, y)  # fit model on all the
+    model.fit(X, y)  # fit model on all the data
     data = data.reshape(1,-1)
     prediction = model.predict(data)
     prediction = prediction[0]
