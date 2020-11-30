@@ -32,7 +32,9 @@ def trade(prediction, weight):
     """
     account = api.get_account()
     cash = float(account.cash)
+    print('Available cash: ' + str(cash))
     cash_to_spend = cash * weight
+    print('Cash to spend: ' + str(cash_to_spend))
 
     if prediction == 1:  # we buy MTUM if we predicted a 1
 
