@@ -38,4 +38,4 @@ def get_features():
     vix_today = vix_today['VIX_open'].values[-1]
 
     features = np.append(features, vix_today)
-    return features
+

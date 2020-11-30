@@ -48,8 +48,8 @@ def trade(prediction, weight):
             current_qty = int(pos.qty)  # our existing position
 
             if pos.side == 'short':  # if we are short, we close the short and go long
-                current_qty = current_qty * (-1)
-                api.submit_order(symbol='MTUM', qty=current_qty + qty_to_buy, side='buy', type='market',
+                current_qty = current_qty * (-1)  # short positions are negative
+                api.submit_order(symbol='MTUM', qty=(int(current_qty + qty_to_buy)), side='buy', type='market',
                                  time_in_force='day')
 
             else:  # if we are already long, we do nothing OR we scale up/down our position according to "weight" (?)
@@ -64,7 +64,7 @@ def trade(prediction, weight):
             current_qty = int(pos.qty)
 
             if pos.side == 'long':  # if we are long VTV we close it and go short
-                api.submit_order(symbol='VTV', qty=current_qty + qty_to_sell, side='sell', type='market',
+                api.submit_order(symbol='VTV', qty=(int(current_qty + qty_to_sell)), side='sell', type='market',
                                  time_in_force='day')
 
             else:  # if we are already short, we do nothing OR re-scale our position
@@ -91,7 +91,7 @@ def trade(prediction, weight):
 
             if pos.side == 'short':  # if we are short, close it and go long
                 current_qty = current_qty * (-1)
-                api.submit_order(symbol='VTV', qty=current_qty + qty_to_buy, side='buy', type='market',
+                api.submit_order(symbol='VTV', qty=(int(current_qty + qty_to_buy)), side='buy', type='market',
                                  time_in_force='day')
 
             else:  # we are already long, so we do nothing or we re-scale
@@ -106,7 +106,7 @@ def trade(prediction, weight):
             current_qty = int(pos.qty)
 
             if pos.side == 'long':  # if we are already long PDP, we close it and go short
-                api.submit_order(symbol='MTUM', qty=current_qty + qty_to_sell, side='sell', type='market',
+                api.submit_order(symbol='MTUM', qty=(int(current_qty + qty_to_sell)), side='sell', type='market',
                                  time_in_force='day')
 
             else:  # if we are already short, we do nothing or we re-scale the position
@@ -168,6 +168,7 @@ while True:
         traded_today = check_trade_history()
 
         if traded_today is True:
+            print('Already traded today...')
             time.sleep(1800)  # wait 30 minutes
             continue  # go back to top of loop
 
