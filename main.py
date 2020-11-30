@@ -156,7 +156,7 @@ def is_market_open():
 
 api = tradeapi.REST(ALPACA_KEY_ID, ALPACA_SECRET_KEY, ALPACA_ENDPOINT)
 
-This block of code is to for running the algo non-stop
+#This block of code is to for running the algo non-stop
  while True:
      trading_day_today = is_market_open()
 
