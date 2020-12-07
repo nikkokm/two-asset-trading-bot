@@ -124,7 +124,7 @@ def get_vix():
     returns a pandas.DataFrame with VIX data
     """
 
-    url = 'http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv'
+    url = 'http://ww2.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv'
     r = requests.get(url)
     f = open('vix.csv', 'wb')
     #open('vix.csv', 'wb').write(r.content)

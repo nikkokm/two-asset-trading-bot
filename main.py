@@ -185,7 +185,7 @@ while True:
     else:
         traded_today = check_trade_history()
 
-        if traded_today is True: 
+        if traded_today is True:
             print('Already traded today...')
             time.sleep(1800)  # wait 30 minutes
             continue  # go back to top of loop
