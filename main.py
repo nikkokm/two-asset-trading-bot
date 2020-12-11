@@ -51,18 +51,22 @@ def trade(prediction, weight):
 
             if pos.side == 'short':  # if we are short, we close the short and go long
                 current_qty = current_qty * (-1)  # short positions are negative
+                print('Closing short by buying ' + str(current_qty) + ' shares of MTUM.')
                 api.submit_order(symbol='MTUM', qty=int(current_qty), side='buy', type='market',
                                  time_in_force='day')
 
                 # we cannot close a short and enter a long position in one order. So first we close the short, then we
                 # proceed to open a new long position
+                print('Opening long position in MTUM by buying ' + str(qty_to_buy) + ' shares.')
                 api.submit_order(symbol='MTUM', qty=int(qty_to_buy), side='buy', type='market',
                                  time_in_force='day')
 
             else:  # if we are already long, we do nothing OR we scale up/down our position according to "weight" (?)
+                print('Already long MTUM, no action taken.')
                 pass
 
         except:  # if we get an error, we do not have MTUM and will therefore go long
+            print('No existing position found for MTUM, going long MTUM by buying ' + str(qty_to_buy) + ' shares.')
             api.submit_order(symbol='MTUM', qty=qty_to_buy, side='buy', type='market', time_in_force='day')
 
         # this block makes sure we short VTV
@@ -71,16 +75,20 @@ def trade(prediction, weight):
             current_qty = int(pos.qty)
 
             if pos.side == 'long':  # if we are long VTV we close it and go short
+                print('Closing long position in VTV by selling ' + str(current_qty) + ' shares.')
                 api.submit_order(symbol='VTV', qty=int(current_qty), side='sell', type='market',
                                  time_in_force='day')
 
+                print('Opening new short position in VTV by selling ' + str(qty_to_sell) + ' shares.')
                 api.submit_order(symbol='VTV', qty=int(qty_to_sell), side='sell', type='market',
                                  time_in_force='day')
 
             else:  # if we are already short, we do nothing OR re-scale our position
+                print('Already short VTV, no action taken.')
                 pass
 
         except:  # if we do not have a VTV position, we go short
+            print('No short position in VTV found. Going short VTV by selling ' + str(qty_to_sell) + ' shares.')
             api.submit_order(symbol='VTV', qty=qty_to_sell, side='sell', type='market', time_in_force='day')
 
         return
@@ -101,16 +109,20 @@ def trade(prediction, weight):
 
             if pos.side == 'short':  # if we are short, close it and go long
                 current_qty = current_qty * (-1)
+                print('Closing short VTV position by buying ' + str(current_qty) + ' shares.')
                 api.submit_order(symbol='VTV', qty=int(current_qty), side='buy', type='market',
                                  time_in_force='day')
 
+                print('Opening new long position in VTV by buying ' + str(qty_to_buy) + ' shares.')
                 api.submit_order(symbol='VTV', qty=int(qty_to_buy), side='buy', type='market',
                                  time_in_force='day')
 
             else:  # we are already long, so we do nothing or we re-scale
+                print('Already long VTV, no action taken.')
                 pass
 
         except:  # we do not have a VTV position so we go long
+            print('No existing VTV position found, going long by buying ' + str(qty_to_buy) + ' shares.')
             api.submit_order(symbol='VTV', qty=qty_to_buy, side='buy', type='market', time_in_force='day')
 
         # this block makes sure we are short MTUM
@@ -119,16 +131,20 @@ def trade(prediction, weight):
             current_qty = int(pos.qty)
 
             if pos.side == 'long':  # if we are already long PDP, we close it and go short
+                print('Closing long MTUM position by selling ' + str(current_qty) + ' shares.')
                 api.submit_order(symbol='MTUM', qty=int(current_qty), side='sell', type='market',
                                  time_in_force='day')
 
+                print('Opening new short position by selling ' + str(qty_to_sell) + ' shares.')
                 api.submit_order(symbol='MTUM', qty=int(qty_to_sell), side='sell', type='market',
                                  time_in_force='day')
 
             else:  # if we are already short, we do nothing or we re-scale the position
+                print('Already short MTUM, no action taken.')
                 pass
 
         except:  # if we do not have a MTUM position, we go short
+            print('No existing MTUM position found, going short by selling ' + str(qty_to_sell) + ' shares.')
             api.submit_order(symbol='MTUM', qty=qty_to_sell, side='sell', type='market', time_in_force='day')
 
         print('Prediction: ' + str(prediction))
